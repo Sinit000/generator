@@ -1,0 +1,35 @@
+<?php
+
+return [
+    // Product
+    'position'                      => 'Position',
+    'language'                 => 'Language',
+    'english'                 => 'English',
+    'khmer'                 => 'Khmer',
+    'dashboard'                 => 'DashBoard',
+    'employee'                 => 'Employee',
+    'attendance'                 => 'Attendance',
+    'approve_board'                 => 'Approve Board',
+    'overtime'                 => 'Overtime',
+    'payroll'                 => 'Payroll',
+    'report'                 => 'Report',
+    'setting'                 => 'Setting',
+    'total_employee'                 => 'Total Employee',
+    'on_time'                 => 'On Time',
+    'late'                 => 'Late',
+    'absent'                 => 'Absent',
+    'leave'                 => 'Leave',
+    'leave_out'                 => 'Leave out',
+    'ot_compensation'                 => 'Overtime Compensation',
+    'day_off'                 => 'Notification Change',
+    'structure'                 => 'Structure',
+    'payslip'                 => 'Payslip',
+    'contract'                 => 'Contract',
+    'overtime_report'                 => 'Overtime Report',
+    'attendance_report'                 => 'Attendance Report',
+    'employee_report'                 => 'Employee Report',
+    'logout'                 => 'Logout',
+    'change_password'                 => 'Change Password',
+    'change៌_user_password'                 => 'Change Employee Password',
+    
+];

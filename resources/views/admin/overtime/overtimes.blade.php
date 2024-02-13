@@ -1,0 +1,949 @@
+@extends('admin.layouts.master')
+@section('title', 'Overtime')
+
+@section('css')
+<link rel="stylesheet" href="{{ asset('backend/modules/datatables/datatables.min.css') }}">
+<style>
+    
+    .en[data="overtime"]::before {
+        content: 'Overtime'
+
+    }
+
+    .kh[data="overtime"]::before {
+        content: 'ការថែមម៉ោង'
+    }
+    .en[data="dashboard"]::before {
+        content: 'Dashboard'
+
+    }
+
+    .kh[data="dashboard"]::before {
+        content: 'ផ្ទាំងការងា'
+    }
+    .en[data="approve_list"]::before {
+        content: 'Approve List'
+
+    }
+
+    .kh[data="approve_list"]::before {
+        content: 'បញ្ជីអនុម័ត'
+    }
+     .en[data="edit_data"]::before {
+        content: 'Edit Data'
+
+    }
+
+    .kh[data="edit_data"]::before {
+        content: 'កែប្រែទិន្នន័យ'
+    }
+     .en[data="status"]::before {
+        content: 'Status'
+
+    }
+
+    .kh[data="status"]::before {
+        content: 'ស្ថានភាព'
+    }
+    
+    .en[data="user_name"]::before {
+        content: 'Employee Name'
+
+    }
+    .kh[data="user_name"]::before {
+        content: 'ឈ្មោះ'
+    }
+    .en[data="reason"]::before {
+        content: 'Reason'
+
+    }
+    .kh[data="reason"]::before {
+        content: 'មូលហេតុ'
+    }
+    .en[data="from_date"]::before {
+        content: 'From Date'
+
+    }
+    .kh[data="from_date"]::before {
+        content: 'ចាប់ពីថ្ងៃ'
+    }
+    
+    .en[data="to_date"]::before {
+        content: 'To Date'
+
+    }
+    .kh[data="to_date"]::before {
+        content: 'ដល់ថ្ងៃ'
+    }
+    .en[data="type"]::before {
+        content: 'Type'
+
+    }
+    .kh[data="type"]::before {
+        content: 'ប្រភេទ'
+    }
+    .en[data="duration"]::before {
+        content: 'Duration'
+
+    }
+    .kh[data="duration"]::before {
+        content: 'រយៈពេល'
+    }
+    .en[data="request_date"]::before {
+        content: 'Request Date'
+
+    }
+    .kh[data="request_date"]::before {
+        content: 'ថ្ងៃស្នើសុំ'
+    }
+    .en[data="action"]::before {
+        content: 'Action'
+
+    }
+    .kh[data="action"]::before {
+        content: 'សកម្មភាព'
+    }
+    .en[data="no"]::before {
+        content: 'No'
+
+    }
+    .kh[data="no"]::before {
+        content: 'ល.រ'
+    }
+    
+     .en[data="btn_close"]::before {
+        content: 'Close'
+
+    }
+    .kh[data="btn_close"]::before {
+        content: 'បិទ'
+    }
+    .en[data="btn_edit"]::before {
+        content: 'Edit'
+
+    }
+    .kh[data="btn_edit"]::before {
+        content: 'បញ្ជូន'
+    }
+    .en[data="ot_rate"]::before {
+        content: 'OT Rate'
+
+    }
+    .kh[data="ot_rate"]::before {
+        content: 'តម្លៃ/ម៉ោង'
+    }
+    .en[data="ot_hour"]::before {
+        content: 'OT Hour'
+
+    }
+    .kh[data="ot_hour"]::before {
+        content: 'ម៉ោងសរុប'
+    }
+    .en[data="total_ot"]::before {
+        content: 'Total OT'
+
+    }
+    .kh[data="total_ot"]::before {
+        content: 'សរុបទឹកប្រាក់'
+    }
+    .en[data="pay_type"]::before {
+        content: 'Pay type'
+
+    }
+    .kh[data="pay_type"]::before {
+        content: 'ប្រភេទទូទាត់'
+    }
+    .en[data="pay_status"]::before {
+        content: 'Pay Status'
+
+    }
+    .kh[data="pay_status"]::before {
+        content: 'ស្ថានភាពទូទាត់'
+    }
+    .en[data="request_by"]::before {
+        content: 'Request By'
+
+    }
+    .kh[data="request_by"]::before {
+        content: 'ស្នើដោយ'
+    }
+    /*#language-family{*/
+    /*    font-family:Khmer OS Battambang;*/
+    /*}*/
+</style>
+@endsection
+
+@section('content')
+<!-- Modal -->
+<div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="company-form">
+                    @csrf
+                    <input type="hidden" name="id" id="id">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="status">Type <sup class="text-danger">*</sup></label>
+                                <select class="form-control select2"  id="type" name="type" style="width: 100%;">
+                                    <option value=""  >Choose Type</option>
+                                    <option value="hour">hour</option>
+                                    <option value="day">day</option>
+                                </select>
+                                <div class="invalid-feedback" id="valid-type"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">Duration <sup class="text-danger">*</sup> </label>
+                                <input type="text" class="form-control" id="number" name="number" placeholder="Enter duration..." autocomplete="off">
+                                <div class="invalid-feedback" id="valid-number"></div>
+                            </div>
+                        </div>
+                       
+
+                    </div>
+                    <div class="row">
+                        
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">OT Method <sup class="text-danger">*</sup></label>
+                                <input type="text" class="form-control" id="ot_method" name="ot_method" placeholder="Enter ot method..." autocomplete="off">
+                                <div class="invalid-feedback" id="valid-ot_method"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">Notes </label>
+                                <input type="text" class="form-control" id="notes" name="notes" placeholder="Enter notes..." autocomplete="off">
+                                <!-- <div class="invalid-feedback" id="valid-name"></div> -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="modal-footer no-bd">
+                <button type="button" id="btn-close" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times"></i>
+                    Close
+                </button>
+                <button type="button" id="btn-save" class="btn btn-info">
+                    <i class="fas fa-check"></i>
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--  -->
+
+<!-- Main Content -->
+<div class="main-content">
+    <section class="section">
+        <div class="section-header">
+            <h1 data="overtime" id="title-family" class="en"></h1>
+            <div class="section-header-breadcrumb">
+               <div class="breadcrumb-item" >
+                    <i class="fa fa-home" ></i>
+                    <a href="{{ url('admin/dashboard') }}" data="dashboard" id="subtitle-family" class="en" ></a>
+                </div>
+            </div>
+        </div>
+        <div class="section-body">
+            <div class="card card-info">
+
+                <!-- <div class="card-header">
+                    <button class="btn btn-info ml-auto" id="btn-add">
+                        <i class="fas fa-plus-circle"></i>
+                        Create Data
+                    </button>
+                </div> -->
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover" id="user-table">
+                            <thead class="thead-light">
+                               
+                                <tr>
+                                    <th><input type="checkbox" name="main_checkbox"><label></label></th>
+                                    <th > <p class="en" data="no" id="subtitle-family"></p></th>
+                                    
+                                    <th ><p class="en" data="user_name" id="subtitle-family"></p>  </th>
+                                    <th ><p class="en" data="reason" id="subtitle-family"></p>  </th>
+                                    
+                                    <th ><p class="en" data="from_date" id="subtitle-family"></p>  </th>
+                                    <th ><p class="en" data="to_date" id="subtitle-family"></p>  </th>
+                                    <th ><p class="en" data="type" id="subtitle-family"></p>  </th>
+                                    <th ><p class="en" data="duration" id="subtitle-family"></p>  </th>
+                                    <th ><p class="en" data="ot_rate" id="subtitle-family"></p>  </th>
+                                    <th ><p class="en" data="ot_hour" id="subtitle-family"></p>  </th>
+                                    <th ><p class="en" data="total_ot" id="subtitle-family"></p>  </th>
+                                    <th ><p class="en" data="pay_type" id="subtitle-family"></p>  </th>
+                                    <th ><p class="en" data="pay_status" id="subtitle-family"></p>  </th>
+                                    
+                                    <th ><p class="en" data="request_date" id="subtitle-family"></p>  </th>
+                                    <th ><p class="en" data="request_by" id="subtitle-family"></p>  </th>
+                                    <th ><p class="en" data="status" id="subtitle-family"></p>  </th>
+                                    <th><p class="en" data="action" id="subtitle-family"></p>   <button class="btn btn-sm btn-danger d-none" id="deleteAllBtn">Send to Accountant</button></th>
+
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+@endsection
+
+@section('js')
+<script src="{{ asset('backend/modules/datatables/datatables.min.js') }}"></script>
+<script src="{{ asset('backend/modules/sweetalert/sweetalert.min.js') }}"></script>
+
+<script>
+checkLanguage();
+
+    function checkLanguage() {
+        langCode = localStorage.getItem("lang-code");
+        if (!langCode) {
+            langCode = "en";
+            localStorage.setItem("lang-code", "en")
+        }
+        let needTranslates = [];
+        if (langCode === "en") {
+            needTranslates = [...document.getElementsByClassName('kh')];
+            for (let n of needTranslates) {
+                n.classList.replace("kh", "en")
+            }
+        } else {
+            needTranslates = [...document.getElementsByClassName('en')];
+            for (let n of needTranslates) {
+                n.classList.replace("en", "kh")
+
+            }
+        }
+    }
+    $(document).ready(function() {
+        // Setup AJAX CSRF
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Initializing DataTable
+        $('#user-table').DataTable({
+            dom: 'Bfrtip',
+            processing: true,
+            serverSide: true,
+            ajax: "{{url('admin/overtimes/getDate')}}",
+            columns: [{
+                    data: 'checkbox',
+                    name: 'checkbox',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'user.name',
+                    name: 'user.name'
+                },
+                {
+                    data: 'reason',
+                    name: 'reason'
+                },
+                {
+                    data: 'from_date',
+                    name: 'from_date'
+                },
+                {
+                    data: 'to_date',
+                    name: 'to_date'
+                },
+                {
+                    data: 'type',
+                    name: 'type'
+                },
+                {
+                    data: 'number',
+                    name: 'number'
+                },
+                {
+                    data: 'overtime_rate',
+                    name: 'overtime_rate'
+                },
+                {
+                    data: 'ot_hour',
+                    name: 'ot_hour'
+                },
+                {
+                    data: 'overtime_total',
+                    name: 'overtime_total'
+                },
+                {
+                    data: 'pay_type',
+                    name: 'pay_type'
+                },
+                {
+                    data: 'pay_status',
+                    name: 'pay_status'
+                },
+                {
+                    data: 'date',
+                    name: 'date'
+                },
+                {
+                    data: 'requested_by',
+                    name: 'requested_by'
+                },
+                {
+                    data: 'status',
+                    name: 'status'
+                },
+                // {
+                //     "data": null,
+                //     render: function(data, type, row) {
+                //         return `<div> <input type="checkbox" name="id[]" id="checkIt" data-id="${row.id}" value="${row.id}"/> </div>`
+                //     }
+                // },
+                {
+                    data: 'action',
+                    name: 'action',
+                    
+                }
+                // {
+                //     "data": null,
+                //     render: function(data, type, row) {
+                //         return data.status == "pending" ? `<div>  <button data-id="${row.id}" class="btn btn-sm btn-icon btn-info"  id="editBtn"><i class="fa fa-edit"></i></button>   <button data-id="${row.id}"  class="btn btn-sm btn-icon btn-danger" data-original-title="Delete"  id="deleteBtn"><i class="fa fa-trash-alt"></i></button></div>` : `<div>  <button data-id="${row.id}"  class="btn btn-sm btn-icon btn-danger" data-original-title="Delete"  id="deleteBtn"><i class="fa fa-trash-alt"></i></button></div>`
+                //     }
+                // },
+                // {
+                //     data: 'action',
+                //     name: 'action',
+                //     className: 'text-center',
+                //     orderable: false,
+                //     searchable: false
+                // }
+            ],
+        }).on('draw', function() {
+            $('input[name="country_checkbox"]').each(function() {
+                this.checked = false;
+            });
+            $('input[name="main_checkbox"]').prop('checked', false);
+            $('button#deleteAllBtn').addClass('d-none');
+        });
+
+        $('#user-table').DataTable().on('draw', function() {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        // Open Modal to Add new Category
+        $('#btn-add').click(function() {
+            $('#formModal').modal('show');
+
+            // $("#company-form")[0].reset();
+            $.ajax({
+                type: "GET",
+                url: "{{url('admin/overtimes/componet')}}",
+                // data:"",
+                dataType: "json",
+                success: function(response) {
+                    console.log(response.data);
+                    console.log(response);
+                    if (response.status == 404) {
+
+
+                    } else {
+
+                        console.log(response.data)
+                        var selOpts = "";
+                        for (i = 0; i < response.data.length; i++) {
+                            console.log(response.data[i]['name']);
+                            var id = response.data[i]['id'];
+                            var val = response.data[i]['name'];
+                            selOpts += "<option value='" + id + "'>" + val + "</option>";
+
+                        }
+
+                        $('#user_id').append(selOpts);
+
+                    }
+                }
+            });
+            $('.modal-title').html('Create Data');
+            $('#company-form').trigger('reset');
+            $('#btn-save').html('<i class="fas fa-check"></i> Save Data');
+
+            $('#company-form').find('.form-control').removeClass('is-invalid is-valid');
+            $('#btn-save').val('save').removeAttr('disabled');
+            // if click close button
+            $('.close').click(function() {
+                // remove that from select value after save data to avoid dublicate data
+                console.log('close button');
+                $('#user_id').find('option').remove().end().append('<option value="">Chooose employee</option>').val('');
+
+            })
+            $('#btn-close').click(function() {
+                // remove that from select value after save data to avoid dublicate data
+                console.log('close button');
+                $('#user_id').find('option').remove().end().append('<option value="">Chooose employee</option>').val('');
+
+            })
+        });
+
+
+        // Store new company or update company
+        $('#btn-save').click(function() {
+            // save data state
+            var formData = {
+                type: $('#type').val(),
+                // user_id: $('#user_id').val(),
+                // reason: $('#reason').val(),
+                number: $('#number').val(),
+                // from_date: $('#from_date').val(),
+                // to_date: $('#to_date').val(),
+                notes: $('#notes').val(),
+
+                // ot_rate: $('#ot_rate').val(),
+                // ot_hour: $('#ot_hour').val(),
+                ot_method: $('#ot_method').val(),
+                // pay_status: $('#pay_status').val(),
+            };
+
+            var state = $('#btn-save').val();
+
+
+            var type = "POST";
+            var ajaxurl = "{{url('admin/overtimes/store')}}";
+            $('#btn-save').html('<i class="fas fa-cog fa-spin"></i> Saving...').attr("disabled", true);
+            console.log(state);
+            console.log(ajaxurl);
+            // update state
+            if (state == "update") {
+                console.log(state);
+                $('#btn-save').html('<i class="fas fa-cog fa-spin"></i> Updating...').attr("disabled", true);
+                var id = $('#id').val();
+                type = "PUT";
+                ajaxurl = "{{ url('admin/overtimes/update') }}" + '/' + id;
+                console.log(ajaxurl);
+            }
+
+            $.ajax({
+                type: type,
+                url: ajaxurl,
+                data: formData,
+                dataType: 'json',
+                success: function(data) {
+                    console.log(state);
+                    if(data.code==0){
+                            swal({
+                                title: "Success!",
+                                text: "Data has been updated successfully!",
+                                icon: "success",
+                                timer: 3000
+                            });
+                        }else{
+                            swal({
+                                title: "Sorry!",
+                                text: data.message,
+                                icon: "error",
+                                timer: 3000
+                            });
+                        }
+                    $('#user-table').DataTable().draw(false);
+                        $('#user-table').DataTable().on('draw', function() {
+                            $('[data-toggle="tooltip"]').tooltip();
+                        });
+                    // remove that from select value after save data to avoid dublicate data
+                    // $('#user_id').find('option').remove().end().append('<option value="">Chooose employee</option>').val('');
+
+                    $('#formModal').modal('hide');
+                },
+                error: function(data) {
+
+                    try {
+                        if (state == "save") {
+
+                            if (data.responseJSON.errors.user_id) {
+                                $('#user_id').removeClass('is-valid').addClass('is-invalid');
+                                $('#valid-user_id').removeClass('valid-feedback').addClass('invalid-feedback');
+                                $('#valid-user_id').html(data.responseJSON.errors.user_id);
+                            }
+                            if (data.responseJSON.errors.number) {
+                                $('#number').removeClass('is-valid').addClass('is-invalid');
+                                $('#valid-number').removeClass('valid-feedback').addClass('invalid-feedback');
+                                $('#valid-number').html(data.responseJSON.errors.number);
+                            }
+                            if (data.responseJSON.errors.reason) {
+                                $('#reason').removeClass('is-valid').addClass('is-invalid');
+                                $('#valid-reason').removeClass('valid-feedback').addClass('invalid-feedback');
+                                $('#valid-reason').html(data.responseJSON.errors.reason);
+                            }
+                            if (data.responseJSON.errors.number) {
+                                $('#number').removeClass('is-valid').addClass('is-invalid');
+                                $('#valid-location').removeClass('valid-feedback').addClass('invalid-feedback');
+                                $('#valid-location').html(data.responseJSON.errors.number);
+                            }
+                            if (data.responseJSON.errors.from_date) {
+                                $('#from_date').removeClass('is-valid').addClass('is-invalid');
+                                $('#valid-from_date').removeClass('valid-feedback').addClass('invalid-feedback');
+                                $('#valid-from_date').html(data.responseJSON.errors.from_date);
+                            }
+                            if (data.responseJSON.errors.to_date) {
+                                $('#to_date').removeClass('is-valid').addClass('is-invalid');
+                                $('#valid-to_date').removeClass('valid-feedback').addClass('invalid-feedback');
+                                $('#valid-to_date').html(data.responseJSON.errors.to_date);
+                            }
+                            if (data.responseJSON.errors.type) {
+                                $('#type').removeClass('is-valid').addClass('is-invalid');
+                                $('#valid-type').removeClass('valid-feedback').addClass('invalid-feedback');
+                                $('#valid-type').html(data.responseJSON.errors.type);
+                            }
+
+
+                            $('#btn-save').html('<i class="fas fa-check"></i> Save Changes');
+                            $('#btn-save').removeAttr('disabled');
+                        } else {
+                            // if (data.responseJSON.errors.user_id) {
+                            //     $('#user_id').removeClass('is-valid').addClass('is-invalid');
+                            //     $('#valid-user_id').removeClass('valid-feedback').addClass('invalid-feedback');
+                            //     $('#valid-user_id').html(data.responseJSON.errors.user_id);
+                            // }
+                            if (data.responseJSON.errors.number) {
+                                $('#number').removeClass('is-valid').addClass('is-invalid');
+                                $('#valid-number').removeClass('valid-feedback').addClass('invalid-feedback');
+                                $('#valid-number').html(data.responseJSON.errors.number);
+                            }
+                            // if (data.responseJSON.errors.reason) {
+                            //     $('#reason').removeClass('is-valid').addClass('is-invalid');
+                            //     $('#valid-reason').removeClass('valid-feedback').addClass('invalid-feedback');
+                            //     $('#valid-reason').html(data.responseJSON.errors.reason);
+                            // }
+                            if (data.responseJSON.errors.ot_method) {
+                                $('#ot_method').removeClass('is-valid').addClass('is-invalid');
+                                $('#valid-ot_method').removeClass('valid-feedback').addClass('invalid-feedback');
+                                $('#valid-ot_method').html(data.responseJSON.errors.ot_method);
+                            }
+                            // if (data.responseJSON.errors.from_date) {
+                            //     $('#from_date').removeClass('is-valid').addClass('is-invalid');
+                            //     $('#valid-from_date').removeClass('valid-feedback').addClass('invalid-feedback');
+                            //     $('#valid-from_date').html(data.responseJSON.errors.from_date);
+                            // }
+                            // if (data.responseJSON.errors.to_date) {
+                            //     $('#to_date').removeClass('is-valid').addClass('is-invalid');
+                            //     $('#valid-to_date').removeClass('valid-feedback').addClass('invalid-feedback');
+                            //     $('#valid-to_date').html(data.responseJSON.errors.to_date);
+                            // }
+                            if (data.responseJSON.errors.type) {
+                                $('#type').removeClass('is-valid').addClass('is-invalid');
+                                $('#valid-type').removeClass('valid-feedback').addClass('invalid-feedback');
+                                $('#valid-type').html(data.responseJSON.errors.type);
+                            }
+
+
+
+                            $('#btn-save').html('<i class="fas fa-check"></i> Update');
+                            $('#btn-save').removeAttr('disabled');
+                        }
+                    } catch {
+                        if (state == "save") {
+                            swal({
+                                title: "Sorry!",
+                                text: "An error occurred, please try again",
+                                icon: "error",
+                                timer: 3000
+                            });
+                        } else {
+                            swal({
+                                title: "Sorry!",
+                                text: "An error occurred, please try again",
+                                icon: "error",
+                                timer: 3000
+                            });
+                        }
+
+                        $('#formModal').modal('hide');
+                    }
+                }
+            });
+        });
+        //  Edit Category
+        $(document).on('click', '#editBtn', function() {
+            var id = $(this).attr('data-id');
+            console.log(id);
+            const type = document.getElementById('type');
+            const duration = document.getElementById('number');
+            $.get("{{ url('admin/overtimes/edit') }}" + '/' + id, function(data) {
+                $('#company-form').find('.form-control').removeClass('is-invalid is-valid');
+                // show data on modal
+                // $('#name').val(data.nip);
+                $('#id').val(data.data.id);
+                $('#type').val(data.data.type);
+               
+                // $('#reason').val(data.data.reason);
+                $('#number').val(data.data.number);
+                $('#notes').val(data.data.notes);
+                $('#ot_method').val(data.data.ot_method);
+                if(data.data.status=="pending"){
+                    type.setAttribute('disabled', '');
+                    duration.setAttribute('disabled', '');
+                }
+                // change value button save to update then state to save
+                $('#btn-save').val('update').removeAttr('disabled');
+                $('#formModal').modal('show');
+                $('.modal-title').html('Edit Data');
+                $('#null').html('<small id="null">Kosongkan jika tidak ingin di ubah</small>');
+                $('#btn-save').html('<i class="fas fa-check"></i> Edit');
+            }).fail(function() {
+                swal({
+                    title: "Sorry!",
+                    text: "Failed to update data!",
+                    icon: "error",
+                    timer: 3000
+                });
+            });
+        });
+
+
+
+        // Delete company
+        $(document).on('click', '#deleteBtn', function() {
+            var id = $(this).attr('data-id');
+            console.log(id);
+            swal("Warning!", "Are you sure you want to delete?", "warning", {
+                buttons: {
+                    cancel: "NO!",
+                    ok: {
+                        text: "Yes!",
+                        value: "ok"
+                    }
+                },
+            }).then((value) => {
+                switch (value) {
+                    case "ok":
+                        $.ajax({
+                            type: "DELETE",
+                            url: "{{ url('admin/overtimes/delete') }}" + '/' + id,
+                            success: function(data) {
+                                if (data.code == 0) {
+                                    $('#user-table').DataTable().draw(false);
+                                    $('#user-table').DataTable().on('draw', function() {
+                                        $('[data-toggle="tooltip"]').tooltip();
+                                    });
+
+                                    swal({
+                                        title: "Success!",
+                                        text: "Data has been deleted successfully!",
+                                        icon: "success",
+                                        timer: 3000
+                                    });
+                                } else {
+                                    swal({
+                                        title: "Sorry!",
+                                        text: data.message,
+                                        icon: "error",
+                                        timer: 3000
+                                    });
+                                }
+
+                            },
+                            error: function(data) {
+                                swal({
+                                    title: "Sorry!",
+                                    text: "An error occurred, please try again",
+                                    icon: "error",
+                                    timer: 3000
+                                });
+                            }
+                        });
+                        break;
+
+                    default:
+                        swal({
+                            title: "Oh Ya!",
+                            text: "Data is not change",
+                            icon: "info",
+                            timer: 3000
+                        });
+                        break;
+                }
+            });
+        });
+        // checkBox = document.getElementById('checkIt');
+        // var id = $(this).attr('data-id');
+        // console.log(id);
+        // check box
+        $(document).on('click', 'input[name="main_checkbox"]', function() {
+            if (this.checked) {
+                $('input[name="country_checkbox"]').each(function() {
+                    this.checked = true;
+                });
+            } else {
+                $('input[name="country_checkbox"]').each(function() {
+                    this.checked = false;
+                });
+            }
+            console.log('show btn delete all');
+            toggledeleteAllBtn();
+        });
+
+        $(document).on('change', 'input[name="country_checkbox"]', function() {
+
+            if ($('input[name="country_checkbox"]').length == $('input[name="country_checkbox"]:checked').length) {
+                $('input[name="main_checkbox"]').prop('checked', true);
+            } else {
+                $('input[name="main_checkbox"]').prop('checked', false);
+            }
+            //    remove btn delete all
+            console.log('remove btn remove');
+            toggledeleteAllBtn();
+        });
+
+        //    if click on btn delete
+        function toggledeleteAllBtn() {
+            if ($('input[name="country_checkbox"]:checked').length > 0) {
+                $('button#deleteAllBtn').text('Submit (' + $('input[name="country_checkbox"]:checked').length + ')').removeClass('d-none');
+            } else {
+                // new classs create in button delete
+                $('button#deleteAllBtn').addClass('d-none');
+            }
+        }
+        // update all
+        $(document).on('click', 'button#deleteAllBtn', function() {
+            var checkedCountries = [];
+            $('input[name="country_checkbox"]:checked').each(function() {
+                checkedCountries.push($(this).data('id'));
+            });
+
+            var url = '{{ url("admin/overtimes/updates") }}';
+            if (checkedCountries.length > 0) {
+                console.log('testing');
+                $.post(url, {
+                            countries_ids: checkedCountries
+                        }, function(data) {
+                            console.log(data);
+                            if (data.code == 0) {
+                                $('#user-table').DataTable().draw(false);
+                                $('#user-table').DataTable().on('draw', function() {
+                                    $('[data-toggle="tooltip"]').tooltip();
+                                });
+
+                                swal({
+                                    title: "Success!",
+                                    text: "Data has been update successfully!",
+                                    icon: "success",
+                                    timer: 3000
+                                });
+                            } else {
+                                swal({
+                                    title: "Sorry",
+                                    text: data.message,
+                                    icon: "info",
+                                    timer: 3000
+                                });
+                            }
+                        }, 'json');
+            //     $.ajax({
+            //     type: type,
+            //     url: ajaxurl,
+            //     data: formData,
+            //     dataType: 'json',
+            //     success: function(data) {
+            //         console.log(state);
+                   
+            //     },
+            //     error: function(data) {
+
+            //         try {
+                       
+            //         } catch {
+                        
+            //         }
+            //     }
+            // });
+                // swal({
+                //     title: 'Are you sure?',
+                //     html: 'You want to update <b>(' + checkedCountries.length + ')</b> countries',
+                //     showCancelButton: true,
+                //     showCloseButton: true,
+                //     confirmButtonText: 'Yes, Update',
+                //     cancelButtonText: 'Cancel',
+                //     confirmButtonColor: '#556ee6',
+                //     cancelButtonColor: '#d33',
+                //     width: 300,
+                //     allowOutsideClick: false
+                // }).then(function(result) {
+                //     console.log('sinit');
+                //     if (result.value) {
+                //         console.log('work or not');
+                //         // pus url 
+                        
+                //     }
+                // })
+            }
+        });
+        // document.getElementById('btn-submit').onclick = function() {
+        //     var markedCheckbox = document.querySelectorAll('input[type="checkbox"]:checked');
+        //     for (var checkbox of markedCheckbox) {
+        //        console.log(checkbox.value);
+        //     }
+        //     console.log(markedCheckbox.length);
+        //     toggledeleteAllBtn();
+        // }
+
+        // function toggledeleteAllBtn(){
+        //        if( $('input[type="checkbox"]:checked').length > 0 ){
+        //            $('button#deleteAllBtn').text('Delete ('+$('input[type="checkbox"]:checked').length+')').removeClass('d-none');
+        //        }else{
+        //         // new classs create in button delete
+        //            $('button#deleteAllBtn').addClass('d-none');
+        //        }
+        //    }
+
+    });
+
+    function checkCheckbox() {
+        // var inputs = document.querySelectorAll('.checkIt');   
+        // for (var i = 0; i < inputs.length; i++) {   
+        //     inputs[i].checked = true;   
+        //     console.log(inputs[i].value);
+        // }   
+        // work
+        // var yes = document.getElementById("checkIt");
+        // var no = document.getElementById("myCheck2");
+        // if (yes.checked == true ) {
+        //     console.log(yes.value)
+        //     console.log('check');
+        // } 
+        // else if (yes.checked == true) {
+        //     var y = document.getElementById("myCheck1").value;
+        //     return document.getElementById("result").innerHTML = y;
+        // } else if (no.checked == true) {
+        //     var n = document.getElementById("myCheck2").value;
+        //     return document.getElementById("result").innerHTML = n;
+
+        // }
+        //  else {
+        //     console.log('error');
+        // }
+
+    }
+</script>
+@endsection

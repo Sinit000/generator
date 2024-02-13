@@ -1,0 +1,15 @@
+@font-face {
+    font-family: 'roboto';
+    src: url(../english/roboto/static/RobotoMono-Regular.ttf);
+}
+@font-face {
+    font-family: 'battambang';
+    src: url(../khmer/content/Content-Bold.ttf);
+}
+@font-face {
+    font-family: 'moul';
+    src: url(../khmer/moul/Moul-Regular.ttf);
+}
+*{
+    font-family: 'Arial', 'battambang';
+}
